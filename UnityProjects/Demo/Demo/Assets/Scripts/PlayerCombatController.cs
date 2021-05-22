@@ -13,7 +13,6 @@ public class PlayerCombatController : MonoBehaviour
      * Determine if an attack has multiple states, what state the attack is in-
      * and not allow transition to the next state until the animation is complete
      * Communicate with Aninmation Controller the attack speed to influence animation speed
-     * 
      */
 
     //Needed components
@@ -42,11 +41,37 @@ public class PlayerCombatController : MonoBehaviour
     //Attack state delay
     //Used to decide if attack will transition to next state
     //Or reset 
-    private float primaryAttackTransitionDelay = 0.5f;
+    private float primaryAttackTransitionDelay = 1f;
 
     //Coroutines
     private Coroutine primaryAttackState0Routine;
-    private Coroutine primaryAttackState1Routine;
+    private Coroutine secondaryAttackStateRoutine;
+    private Coroutine specialAttackStateRoutine;
+
+    //Coroutine running checks
+    private bool primaryRoutineActive = false;
+    private bool secondaryRoutineActive = false;
+    private bool specialRoutineActive = false;
+
+    //Attack delays
+    //Such as cooldowns
+    private bool primaryEnabled;
+    private bool secondaryEnabled;
+    private bool specialEnabled;
+
+    private float primaryCoolDown = 0f;
+    private float secondaryCoolDown = 2f;
+    private float specialCoolDown = 5f;
+
+    //Attack uses
+    //If value is -1, then there is no max uses
+    private int primaryMaxUses = -1;
+    private int secondaryMaxUses = 2;
+    private int specialMaxUses = 1;
+
+    private int primaryCurrentUses;
+    private int secondaryCurrentUses;
+    private int specialCurrentUses;
 
     void Awake()
     {
@@ -55,12 +80,22 @@ public class PlayerCombatController : MonoBehaviour
         animationController = GetComponent<AnimationStateController>();
     }
 
+    void Start()
+    {
+        primaryEnabled = true;
+        secondaryEnabled = true;
+        specialEnabled = true;
+        primaryCurrentUses = primaryMaxUses;
+        secondaryCurrentUses = secondaryMaxUses;
+        specialCurrentUses = specialMaxUses;
+    }
+
     // Update is called once per frame
     void Update()
     {
         isAttacking = inputController.getAttack();
-        secondaryAttack = inputController.getSecondaryAttack();
-        specialAttack = inputController.getSpecialAttack();
+        specialAttack = inputController.getSpecialAttack() && specialEnabled && specialCurrentUses > 0f;
+        secondaryAttack = inputController.getSecondaryAttack() && !specialAttack && secondaryEnabled && secondaryCurrentUses > 0f;
         primaryAttack = inputController.getPrimaryAttack() && !secondaryAttack && !specialAttack;
 
         //Check if any attack animations are in progress
@@ -70,58 +105,67 @@ public class PlayerCombatController : MonoBehaviour
         specialAttackAnimation = animationController.AnimationInPlay("Special");
 
         //True if a single attack animation in progress
-        attackAnimationInProgress = primaryAttackState0Animation || primaryAttackState1Animation || secondaryAttackAnimation;
+        attackAnimationInProgress = primaryAttackState0Animation || primaryAttackState1Animation || secondaryAttackAnimation || specialAttackAnimation;
 
         //Primary Attack
         //Check for primary attack input and if attack animation still in progress
         //Cycle to first attack state when final attack state in completed
         //When final attack state animation is over, reset states
-        /*if (primaryAttack)
+        if (primaryAttack)
         {
             if (!attackAnimationInProgress)
             {
-                break;
+                if(primaryAttackState == 0f)
+                {
+                    primaryAttackState++;
+                }else if(primaryAttackState == 1f)
+                {
+                    primaryAttackState++;
+                }
             }
+        }
+        //If primary attack state used, start coroutine for reset
+        //Done outside if(primaryAttack) so it continues to run when not primary attacking
+        if(primaryAttackState == 1f)
+        {
+            primaryAttackState0Routine = StartCoroutine(primaryAttackStateReset());
+        }else if(primaryAttackState == 2f)
+        {
+            StopCoroutine(primaryAttackStateReset());
+            primaryAttackState = 0f;
         }
 
         //Secondary Attack
         if (secondaryAttack && !attackAnimationInProgress)
         {
             secondaryAttackState = true;
+            secondaryEnabled = false;
+            secondaryCurrentUses--;
+        }   
 
+        //Special Attack
+        if(specialAttack && !attackAnimationInProgress)
+        {
+            specialAttackState = true;
+            specialEnabled = false;
+            specialCurrentUses--;
         }
 
-        // Attack cooldowns
-
+        //If current uses for attacks are lower than max uses,
+        //Start cooldowns to add uses
         //Primary
-        //If primaryAttack0 is performed, must recieve input again
-        //Within primaryAttackTransitionTime to use the next stage
-        //Else next use of primaryAttack will be primaryAttack0
-        if (primaryAttackState0)
-        {
-            primaryAttackState0Routine = StartCoroutine(primaryAttackState0Reset());
-        }
-
-        
-         * If more attack states are added
-        if (primaryAttackState1)
-        {
-            primaryAttackState1Routine = StartCoroutine(primaryAttackState1Reset());
-        }
-        
         
         //Secondary
-        if (secondaryAttack)
+        if(secondaryCurrentUses < secondaryMaxUses)
         {
-
-        }*/
+            StartCoroutine(secondaryAttackReset());
+        }
+        //Special
 
     }
-    /*
+    
     private void Attack()
     {
-        //Set attack animation
-
         //Detect enemies in range of attack
 
         //Damage taken
@@ -132,32 +176,44 @@ public class PlayerCombatController : MonoBehaviour
         return isAttacking;
     }
 
-    public bool getPrimaryAttack()
+    public float getPrimaryAttack()
     {
-        return primaryAttack;
+        return primaryAttackState;
     }
 
     public bool getSecondaryAttack()
     {
-        return secondaryAttack;
+        return secondaryAttackState;
     }
 
-    private void startPrimaryDelay()
+    public bool getSpecialAttack()
     {
-        StartCoroutine(startPrimaryDelay());
+        return specialAttackState;
     }
 
     IEnumerator primaryAttackStateReset()
     {
+        primaryRoutineActive = true;
         yield return new WaitForSeconds(primaryAttackTransitionDelay);
         primaryAttackState = 0;
+        primaryRoutineActive = false;
     }
-
-    float secondaryDelay = 0;
 
     IEnumerator secondaryAttackReset()
     {
-        yield return new WaitForSeconds(secondaryDelay);
-        secondaryAttackState = false;
-    }*/
+        secondaryRoutineActive = true;
+        yield return new WaitForSeconds(secondaryCoolDown);
+        secondaryEnabled = true;
+        secondaryCurrentUses++;
+        secondaryRoutineActive = false;
+    }
+
+    IEnumerator specialAttackReset()
+    {
+        specialRoutineActive = true;
+        yield return new WaitForSeconds(specialCoolDown);
+        specialEnabled = true;
+        specialCurrentUses++;
+        specialRoutineActive = false;
+    }
 }
