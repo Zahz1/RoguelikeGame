@@ -27,10 +27,6 @@ public class Interactable : MonoBehaviour
     public bool isUsed = false;             //Boolean value to determine if interactable has been interacted with, thus disabling or disallowing further interaction
     public int uses;   
     private bool isPurchasable = false;     //Boolean value if interactable requires purchase
-    [SerializeField]
-    private int cost;                       //If isPurchasable is true, assign a cost to the player
-    [SerializeField]
-    private int baseCost;                   //Used to determine cost calculations
     public bool isInteractable;
 
     private void Awake()
@@ -60,21 +56,6 @@ public class Interactable : MonoBehaviour
     //To this GameObject 
     public virtual bool OnTriggerEnter(Collider other)
     {
-        #region V1
-        /*
-        if (other.tag == "Player" && !this.isUsed)
-        {
-            player = other.GetComponent<Transform>();
-            playerInteractController = player.GetComponent<PlayerInteractController>();
-            
-            playerInteractController.SetFocus(this.gameObject);
-            
-            GameEvents.Instance.InteractionUITriggerEnter();
-            return true;
-        }
-        return false;
-        */
-        #endregion
         //if GameObject colliding with trigger is tag "Player" and this.uses > 0
         //Then grab player transform and PlayerInteractionController, if interactable 
         //is useable, set PlayerInteractionController focus to this.
@@ -103,9 +84,12 @@ public class Interactable : MonoBehaviour
     public virtual void Interact()
     {
         this.uses--;
+        this.isUsed = true;
         if(this.uses == 0)
         {
             playerInteractController.RemoveFocus();
+            interactionBoundary.enabled = false;
+            GameEvents.Instance.InteractionUITriggerExit();
             this.enabled = false;
         }  
     }
@@ -119,17 +103,6 @@ public class Interactable : MonoBehaviour
         return false;
     }
 
-    //Will be used to dynamically determine cost of items and other interactables
-    //Based on whatever factors are decided, ie. difficulty, rarity, etc.
-    public virtual void SetCost()
-    {
-
-    }
-
-    #region Getters
     public string GetName() { return this.name; }
     public InteractableType GetInteractableType() { return this.interactType; }
-    public int GetCost() { return this.cost; }
-    #endregion
-
 }

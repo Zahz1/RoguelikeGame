@@ -10,6 +10,8 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get { return instance; } } 
     void Awake()
     {
+        this.GameStage = 1;
+        
         if(instance != null && instance != this)
         {
             Debug.LogWarning("More than one instance of GameManager found!");
@@ -28,7 +30,7 @@ public class GameManager : MonoBehaviour
     private bool playerDied;
     private bool playerWon;
 
-    public int GameStage;
+    private int GameStage;
     public int DifficultyModifier;
 
     private void Start()
@@ -95,4 +97,6 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(0.1f);
         PauseController.Instance.GameIsPaused = !PauseController.Instance.GameIsPaused;
     }
+
+    public int GetGameStage(){ return this.GameStage; }
 }

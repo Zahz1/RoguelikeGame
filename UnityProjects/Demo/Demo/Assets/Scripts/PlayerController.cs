@@ -9,6 +9,7 @@ using UnityEngine;
 [RequireComponent(typeof(AnimationStateController))]
 [RequireComponent(typeof(CharacterInfo))]
 [RequireComponent(typeof(PlayerInteractController))]
+[RequireComponent(typeof(Inventory))]
 public class PlayerController : MonoBehaviour
 {
     private int id;
@@ -21,6 +22,7 @@ public class PlayerController : MonoBehaviour
     private AnimationStateController animationStateController;
     private CharacterInfo characterInfo;
     private PlayerInteractController playerInteractController;
+    private Inventory playerInv;
 
     private bool interact;
     private Interactable interactable;
@@ -39,6 +41,7 @@ public class PlayerController : MonoBehaviour
         animationStateController = GetComponent<AnimationStateController>();
         characterInfo = GetComponent<CharacterInfo>();
         playerInteractController = GetComponent<PlayerInteractController>();
+        playerInv = GetComponent<Inventory>();
         interactionMask = LayerMask.GetMask("Interactable");
     }
 

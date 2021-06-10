@@ -34,8 +34,7 @@ public class HealthShrineController : Interactable
         if (base.isInteractable && playerStats != null)
         {
             playerStats.Heal((int)(playerStats.GetCurrentMaxHealth() * healthRegen));
-            base.uses--;
-            base.isUsed = true;
+            base.Interact();
             if (base.uses > 0) {
                 cooldownRoutine = StartCoroutine(Cooldown());
             }
@@ -47,14 +46,7 @@ public class HealthShrineController : Interactable
         if (base.OnTriggerEnter(other))
         {
             playerStats = base.player.GetComponent<CharacterInfo>();
-            if (IsInteractable())
-            {
-                base.isInteractable = true;
-            }
-            else
-            {
-                base.isInteractable = false;
-            }
+            IsInteractable();
         }
         return true;
     }

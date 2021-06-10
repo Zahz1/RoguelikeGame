@@ -46,6 +46,11 @@ public class PlayerInteractController : MonoBehaviour
                 interactable.Interact();
                 interactable = null;
                 break;
+            case InteractableType.Item:
+                interactable = focus.GetComponent<ItemPickup>();
+                interactable.Interact();
+                interactable = null;
+                break;
         }
         
     }
