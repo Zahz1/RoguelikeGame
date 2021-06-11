@@ -11,12 +11,16 @@ public class ChestController : Interactable
     private int cost;
     public List<Item> lootPool = new List<Item>();
     private CharacterInfo playerStats;
+    private DropChance dropChanceValues;
+    private int cost;
+    public List<Item> lootPool = new List<Item>();
 
     public override void Start()
     {
         base.Start();
         base.uses = 1;
         base.interactType = InteractableType.Chest;
+
         this.dropRarity = ItemRarity.None;
 
         //Check what chest rarity/type to calculate drop 
@@ -71,7 +75,7 @@ public class ChestController : Interactable
         //int dropIndex = GenerateValue(0, n(n = number of elements -1));
         //Item loot = lootPool.get(dropIndex);
     }
-
+    
     public override bool OnTriggerEnter(Collider other)
     {
         if(base.OnTriggerEnter(other)){
@@ -201,6 +205,7 @@ public class ChestController : Interactable
             }
         }
         Debug.LogWarning("No DropRarity selected!");
+        return true;
     }
 
     private void SetCost()
@@ -221,6 +226,11 @@ public class ChestController : Interactable
         public int MythicChance { get; }
         public int LegendaryChance { get; }
         public int ChampionChance { get; }
+        private int CommonChance { get; }
+        private int HeroicChance { get; }
+        private int MythicChance { get; }
+        private int LegendaryChance { get; }
+        private int ChampionChance { get; }
         
         public DropChance(int commonChance, int heroicChance, int mythicChacne, 
                                 int legendaryChance, int championChance){
