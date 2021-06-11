@@ -51,6 +51,11 @@ public class PlayerInteractController : MonoBehaviour
                 interactable.Interact();
                 interactable = null;
                 break;
+            case InteractableType.Chest:
+                interactable = focus.GetComponent<ChestController>();
+                interactable.Interact();
+                interactable = null;
+                break;
         }
         
     }

@@ -8,7 +8,6 @@ using UnityEngine;
 public class Interactable : MonoBehaviour
 {
     //Required Components
-    private Transform transform;
     public Outline outline;
     private SphereCollider interactionBoundary;
     private Rigidbody rb;
@@ -31,7 +30,6 @@ public class Interactable : MonoBehaviour
 
     private void Awake()
     {
-        transform = GetComponent<Transform>();
         outline = GetComponent<Outline>();
         interactionBoundary = GetComponent<SphereCollider>();
         rb = GetComponent<Rigidbody>();

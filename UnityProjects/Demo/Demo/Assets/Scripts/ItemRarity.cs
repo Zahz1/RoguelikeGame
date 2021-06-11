@@ -4,6 +4,7 @@ using UnityEngine;
 
 public enum ItemRarity 
 {
+    None,
     Common,
     Heroic,
     Mythic,

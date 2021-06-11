@@ -6,6 +6,11 @@ public class ChestController : Interactable
 {
     [SerializeField]
     private ChestType type;
+    private ItemRarity dropRarity;
+    private DropChance dropChanceValues;
+    private int cost;
+    public List<Item> lootPool = new List<Item>();
+    private CharacterInfo playerStats;
     private DropChance dropChanceValues;
     private int cost;
     public List<Item> lootPool = new List<Item>();
@@ -15,6 +20,8 @@ public class ChestController : Interactable
         base.Start();
         base.uses = 1;
         base.interactType = InteractableType.Chest;
+
+        this.dropRarity = ItemRarity.None;
 
         //Check what chest rarity/type to calculate drop 
         switch(type){
@@ -39,27 +46,165 @@ public class ChestController : Interactable
             dropChanceValues = new DropChance(0, 0, 0, 0, 100);
             cost = 350;
             break;
+            default:
+                Debug.LogWarning("Chest does not have a valid ChestType!");
+                break;
         }
         SetCost();
     }
 
-    public override void Interact()
+    public override void Update()
     {
-        
+        if(playerStats != null){
+            IsInteractable();
+        }
     }
 
+    public override void Interact()
+    {
+        //Determine rarity of drop with DropChance Struct
+        int randNum = GenerateValue(1, 101);
+        GetDropRarity(randNum);
+        if(this.dropRarity == ItemRarity.None){
+            Debug.LogWarning("Chest Failure, No DropRarity Found!");
+            return;
+        }
+        //Grab relavant loop pool
+        //lootPool = LootPool.GetPool(enum ItemRarity);
+        //Determine which item
+        //int dropIndex = GenerateValue(0, n(n = number of elements -1));
+        //Item loot = lootPool.get(dropIndex);
+    }
+    
     public override bool OnTriggerEnter(Collider other)
     {
+        if(base.OnTriggerEnter(other)){
+            playerStats = base.player.GetComponent<CharacterInfo>();
+            IsInteractable();
+        }
         return true;
     }
 
     public override void OnTriggerExit()
     {
-        
+        base.OnTriggerExit();
+        playerStats = null;
     }
 
     public override bool IsInteractable()
     {
+        if(base.IsInteractable()){
+            if(playerStats.GetCharacterWallet() >= this.cost){
+                base.outline.enabled = true;
+                base.isInteractable = true;
+                GameEvents.Instance.InteractionUITriggerEnter();
+                return true;
+            }
+        }else{
+            base.outline.enabled = false;
+            base.isInteractable = false;
+            GameEvents.Instance.InteractionUITriggerExit();
+        }
+        return false;
+    }
+
+    private int GenerateValue(int min, int max){
+        return Random.Range(min, max);
+    }
+
+    private void GetDropRarity(int randNum){
+        //Common drop
+        bool chance0 = false;
+        if(dropChanceValues.CommonChance != 0){
+            chance0 = true;
+            if(randNum >= 1 && randNum <= dropChanceValues.CommonChance){
+                
+                dropRarity = ItemRarity.Common;
+                Debug.Log(dropRarity + " : " + dropRarity);
+                return;
+            }
+        }
+        //Heroic drop
+        if(dropChanceValues.HeroicChance != 0){
+            if(!chance0){
+                chance0 = true;
+                if(randNum >= 1 && randNum <= dropChanceValues.HeroicChance){
+                    
+                    dropRarity = ItemRarity.Heroic;
+                    Debug.Log(dropRarity + " : " + dropRarity);
+                    return;
+                }
+            }else{
+                if(randNum >= (dropChanceValues.CommonChance + 1) && 
+                    randNum <= (dropChanceValues.Add(2))){
+                    
+                    dropRarity = ItemRarity.Heroic;
+                    Debug.Log(dropRarity + " : " + dropRarity);
+                    return;
+                }
+            }
+        }
+        //Mythic drop
+        if(dropChanceValues.MythicChance != 0){
+            if(!chance0){
+                chance0 = true;
+                if(randNum >=1 && randNum <= dropChanceValues.MythicChance){
+
+                    dropRarity = ItemRarity.Mythic;
+                    Debug.Log(dropRarity + " : " + dropRarity);
+                    return;
+                }
+            }else{
+                if(randNum >= (dropChanceValues.Add(2) + 1) &&
+                    randNum <= (dropChanceValues.Add(3))){
+
+                    dropRarity = ItemRarity.Mythic;
+                    Debug.Log(dropRarity + " : " + dropRarity);
+                    return;
+                }
+            }
+        }
+        //Legendary drop
+        if(dropChanceValues.LegendaryChance != 0){
+            if(!chance0){
+                chance0 = true;
+                if(randNum >= 1 && randNum <= dropChanceValues.LegendaryChance){
+
+                    dropRarity = ItemRarity.Legendary;
+                    Debug.Log(dropRarity + " : " + dropRarity);
+                    return;
+                }
+            }else{
+                if(randNum >= (dropChanceValues.Add(3) +1) && 
+                    randNum <= (dropChanceValues.Add(4))){
+                    
+                    dropRarity = ItemRarity.Legendary;
+                    Debug.Log(dropRarity + " : " + dropRarity);
+                    return;
+                }
+            }
+        }
+        //Champion drop
+        if(dropChanceValues.ChampionChance != 0){
+            if(!chance0){
+                chance0 = true;
+                if(randNum >= 1 && randNum <= dropChanceValues.ChampionChance){
+
+                    dropRarity = ItemRarity.Champion;
+                    Debug.Log(dropRarity + " : " + dropRarity);
+                    return;
+                }
+            }else{
+                if(randNum >= (dropChanceValues.Add(4) + 1) &&
+                    randNum <= (dropChanceValues.Add(5))){
+
+                    dropRarity = ItemRarity.Champion;
+                    Debug.Log(dropRarity + " : " + dropRarity);
+                    return;
+                }
+            }
+        }
+        Debug.LogWarning("No DropRarity selected!");
         return true;
     }
 
@@ -76,6 +221,11 @@ public class ChestController : Interactable
     }
 
     private readonly struct DropChance{
+        public int CommonChance { get; }
+        public int HeroicChance { get; }
+        public int MythicChance { get; }
+        public int LegendaryChance { get; }
+        public int ChampionChance { get; }
         private int CommonChance { get; }
         private int HeroicChance { get; }
         private int MythicChance { get; }
@@ -89,6 +239,24 @@ public class ChestController : Interactable
             MythicChance = mythicChacne;
             LegendaryChance = legendaryChance;
             ChampionChance = championChance;
+        }
+
+        public int Add(int num){
+            switch(num){
+                case 1:
+                    return CommonChance;
+                case 2:
+                    return CommonChance + HeroicChance;
+                case 3:
+                    return CommonChance + HeroicChance + MythicChance;
+                case 4:
+                    return CommonChance + HeroicChance + MythicChance + LegendaryChance;
+                case 5: 
+                    return CommonChance + HeroicChance + MythicChance + LegendaryChance + ChampionChance;
+                default:
+                    Debug.LogWarning("Invalid Int in DropChance.Add()!");
+                    return -1;
+            }
         }
     }
 }
