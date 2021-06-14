@@ -20,7 +20,7 @@ public class PlayerController : MonoBehaviour
     private PlayerCombatController playerCombatController;
     private Animator animator;
     private AnimationStateController animationStateController;
-    private CharacterInfo characterInfo;
+    private CharacterInfo playerStats;
     private PlayerInteractController playerInteractController;
     private Inventory playerInv;
 
@@ -39,7 +39,7 @@ public class PlayerController : MonoBehaviour
         playerCombatController = GetComponent<PlayerCombatController>();
         animator = GetComponent<Animator>();
         animationStateController = GetComponent<AnimationStateController>();
-        characterInfo = GetComponent<CharacterInfo>();
+        playerStats = GetComponent<CharacterInfo>();
         playerInteractController = GetComponent<PlayerInteractController>();
         playerInv = GetComponent<Inventory>();
         interactionMask = LayerMask.GetMask("Interactable");
@@ -59,9 +59,9 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if (InputListener.Instance.GetKillSelf() && characterInfo.GetAlive())
+        if (InputListener.Instance.kill && playerStats.isAlive)
         {
-            characterInfo.SetCurrentHealth(0);
+            playerStats.Damage(playerStats.currentStats.CurrentHealth);
             Debug.Log("Player Killed Self!");
             playerMovementController.enabled = false;
             playerCombatController.enabled = false;

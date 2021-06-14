@@ -44,24 +44,26 @@ public class InputListener : MonoBehaviour
 
     //Used for key rebinding
     private KeyCode detectedKey;
+    private KeyCode debugConsoleKey = KeyCode.BackQuote;
 
     //Stores read inputs
-    private float horizontal;
-    private float vertical;
-    private float horizontalMouse;
-    private float verticalMouse;
-    private bool sprint;
-    private bool sprintStop;
-    private bool jump;
-    private bool attack;
-    private bool primaryAttack;
-    private bool secondaryAttack;
-    private bool specialAttack;
-    private bool kill;
-    private bool menu;
-    public bool menuOpen;
-    private bool interact;
-    private bool damageSelf;
+    public float horizontal { get; private set; }
+    public float vertical { get; private set; }
+    public float horizontalMouse {get; private set; }
+    public float verticalMouse {get; private set; }
+    public bool sprint {get; private set; }
+    public bool sprintStop {get; private set; }
+    public bool jump {get; private set; }
+    public bool attack {get; private set; }
+    public bool primaryAttack {get; private set; }
+    public bool secondaryAttack {get; private set; }
+    public bool specialAttack {get; private set; }
+    public bool kill {get; private set; }
+    public bool menu {get; private set; }
+    public bool menuOpen {get; set; }
+    public bool interact {get; private set; }
+    public bool damageSelf {get; private set; }
+    public bool openDebugConsole {get; private set; }
 
     /// <summary>
     /// Listens for every action input
@@ -82,6 +84,15 @@ public class InputListener : MonoBehaviour
         attack = primaryAttack || secondaryAttack || specialAttack;
         kill = Input.GetKeyDown(killSelf);
         damageSelf = Input.GetKeyDown(damageCode);
+
+        //Opening and closing debug console
+        openDebugConsole = Input.GetKeyDown(debugConsoleKey);
+        
+        if(openDebugConsole){
+            Debug.Log(true);
+            GameEvents.Instance.DisplayDebugConsoleEnter();
+        }
+        
 
         menu = Input.GetKeyDown(menuKeyCode);
         if(menu)
@@ -107,90 +118,6 @@ public class InputListener : MonoBehaviour
             sprintStop = true;
         }
     }
-
-    #region Input Getters
-    /// <summary>
-    /// Below methods to return boolean values
-    /// of key pressed from Update()
-    /// Boolean vals can only be set to true or false
-    /// from this script and no other, so other scripts can 
-    /// only grab the value
-    /// </summary>
-    public float GetHorizontal()
-    {
-        return horizontal;
-    }
-
-    public float GetVertical()
-    {
-        return vertical;
-    }
-
-    public float GetHorizontalMouse()
-    {
-        return horizontalMouse;
-    }
-
-    public float GetVerticalMouse()
-    {
-        return verticalMouse;
-    }
-
-    public bool GetSprint()
-    {
-        return sprint;
-    }
-
-    public bool GetSprintStop()
-    {
-        return sprintStop;
-    }
-
-    public bool GetJump()
-    {
-        return jump;
-    }
-
-    public bool GetPrimaryAttack()
-    {
-        return primaryAttack;
-    }
-
-    public bool GetSecondaryAttack()
-    {
-        return secondaryAttack;
-    }
-
-    public bool GetSpecialAttack()
-    {
-        return specialAttack;
-    }
-
-    public bool GetAttack()
-    {
-        return attack;
-    }
-
-    public bool GetKillSelf()
-    {
-        return kill;
-    }
-
-    public bool GetMenu()
-    {
-        return menu;
-    }
-
-    public bool GetInteract()
-    {
-        return interact;
-    }
-
-    public bool GetDamageSelf()
-    {
-        return damageSelf;
-    }
-    #endregion
 
     #region potential rebinding code
     //Unfinished for rebinding later

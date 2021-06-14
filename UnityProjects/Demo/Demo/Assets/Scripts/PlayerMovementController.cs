@@ -68,11 +68,11 @@ public class PlayerMovementController : MonoBehaviour
         if (!PauseController.Instance.GameIsPaused)
         {
             //Sprint if using sprint key and sprintRecovery == true
-            sprint = InputListener.Instance.GetSprint() && sprintRecovery;
-            sprintStop = InputListener.Instance.GetSprintStop();
-            jump = InputListener.Instance.GetJump() && groundedPlayer;
-            horizontal = InputListener.Instance.GetHorizontal();
-            vertical = InputListener.Instance.GetVertical();
+            sprint = InputListener.Instance.sprint && sprintRecovery;
+            sprintStop = InputListener.Instance.sprintStop;
+            jump = InputListener.Instance.jump && groundedPlayer;
+            horizontal = InputListener.Instance.horizontal;
+            vertical = InputListener.Instance.vertical;
         }
         
         //If player falls off the map, restart the game

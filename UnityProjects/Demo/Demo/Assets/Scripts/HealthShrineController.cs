@@ -33,7 +33,7 @@ public class HealthShrineController : Interactable
     {
         if (base.isInteractable && playerStats != null)
         {
-            playerStats.Heal((int)(playerStats.GetCurrentMaxHealth() * healthRegen));
+            playerStats.Heal((int)(playerStats.currentStats.MaxHealth * healthRegen));
             base.Interact();
             if (base.uses > 0) {
                 cooldownRoutine = StartCoroutine(Cooldown());
@@ -61,7 +61,7 @@ public class HealthShrineController : Interactable
     {
         if (base.IsInteractable()) 
         {
-            if(playerStats.GetCurrentHealth() < playerStats.GetCurrentMaxHealth())
+            if(playerStats.currentStats.CurrentHealth < playerStats.currentStats.MaxHealth)
             {
                 base.outline.enabled = true;
                 base.isInteractable = true;

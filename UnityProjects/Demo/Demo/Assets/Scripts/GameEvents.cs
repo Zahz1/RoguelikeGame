@@ -82,6 +82,15 @@ public class GameEvents : MonoBehaviour
             OnPlayerDiedTriggerEnter();
         }
     }
+    
+    //Debug Console
+    public event Action OnDisplayDebugConsoleEnter;
+    public void DisplayDebugConsoleEnter(){
+        if(OnDisplayDebugConsoleEnter != null){
+            OnDisplayDebugConsoleEnter();
+        }
+    }
+
     #endregion
 
     #region Health Triggers
