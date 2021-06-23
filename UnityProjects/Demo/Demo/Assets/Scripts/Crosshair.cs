@@ -4,10 +4,8 @@ using UnityEngine;
 
 public class Crosshair : MonoBehaviour
 {
-
-    private void update()
-    {
-        
+       private void update()
+    {    
         transform.position = Input.mousePosition;
     }
 }

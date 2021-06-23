@@ -7,10 +7,11 @@ public class DebugController : MonoBehaviour
     private bool displayConsole = false;
     string input;
 
-    public List<DebugCommand> commandList;
+    public List<object> commandList;
     public static DebugCommand KILL_ALL;
     public static DebugCommand ADD_MONEY;
-    public static DebugCommand ADD_HEALTH;
+    public static DebugCommand RESTORE_HEALTH;
+    public static DebugCommand<int> ADD_HEALTH;
     private void Awake(){
 
         KILL_ALL = new DebugCommand("kill_all", "Remove all entities frome the scene.", "kill_all", () => 
@@ -23,15 +24,21 @@ public class DebugController : MonoBehaviour
             DebugCommandController.Instance.AddMoney(100);
         });
 
-        ADD_HEALTH = new DebugCommand("add_health", "Add specified amount of health to player", "add_health", () =>
+        RESTORE_HEALTH = new DebugCommand("restore_health", "Restore full health to player", "restore_health", () =>
         {
-            DebugCommandController.Instance.AddHealth(100);
+            DebugCommandController.Instance.RestoreHealth();
         });
 
-        commandList = new List<DebugCommand>
+        ADD_HEALTH = new DebugCommand<int>("add_health", "Add specified amount of health to player", "add_health", (x) =>
+        {
+            DebugCommandController.Instance.AddHealth(x);
+        });
+
+        commandList = new List<object>
         {
             KILL_ALL,
             ADD_MONEY,
+            RESTORE_HEALTH,
             ADD_HEALTH
         };
     }
@@ -64,7 +71,8 @@ public class DebugController : MonoBehaviour
     }
 
     private void HandleInput(){
-        
+        string[] properties = input.Split(' ');
+
         for(int i = 0; i < commandList.Count; i++)
         {
 
@@ -76,8 +84,10 @@ public class DebugController : MonoBehaviour
                 if(commandList[i] as DebugCommand != null)
                 {
                     (commandList[i] as DebugCommand).Invoke();
+                    return;
                 }
             }
         }
+        Debug.LogWarning(input.ToString() + " is not a valid command!");
     }
 }

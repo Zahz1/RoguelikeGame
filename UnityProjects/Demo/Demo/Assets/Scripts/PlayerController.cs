@@ -14,22 +14,15 @@ public class PlayerController : MonoBehaviour
 {
     private int id;
 
-    private Transform player;
-    private CharacterController characterController;
-    private PlayerMovementController playerMovementController;
-    private PlayerCombatController playerCombatController;
-    private Animator animator;
-    private AnimationStateController animationStateController;
-    private CharacterInfo playerStats;
-    private PlayerInteractController playerInteractController;
-    private Inventory playerInv;
-
-    private bool interact;
-    private Interactable interactable;
-    private GameObject item;
-    private GameObject focus;
-    private RaycastHit hit;
-    private LayerMask interactionMask;
+    public Transform player { get; private set;}
+    public CharacterController characterController { get; private set; }
+    public PlayerMovementController playerMovementController { get; private set; }
+    public PlayerCombatController playerCombatController { get; private set; }
+    public Animator animator { get; private set; }
+    public AnimationStateController animationStateController { get; private set; }
+    public CharacterInfo playerStats { get; private set; }
+    public PlayerInteractController playerInteractController { get; private set; }
+    public Inventory playerInv { get; private set; }
 
     void Awake()
     {
@@ -42,7 +35,6 @@ public class PlayerController : MonoBehaviour
         playerStats = GetComponent<CharacterInfo>();
         playerInteractController = GetComponent<PlayerInteractController>();
         playerInv = GetComponent<Inventory>();
-        interactionMask = LayerMask.GetMask("Interactable");
     }
 
     // Start is called before the first frame update
@@ -59,37 +51,76 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        //Check every update for if player died
+        CheckPlayerDeath();
+        //Check if player goes over max health
+        OverHeal();
+        //If coroutine to decrease health that is over max limit is active, and player goes to or under
+        //Max health, stop the coroutine
+        if(dischargeMaxHealthIsActive){
+            if(playerStats.currentStats.CurrentHealth <= playerStats.currentStats.MaxHealth){
+                StopCoroutine(dischargeMaxHealth);
+            }
+        }
+
+        //Debug input to kill player
         if (InputListener.Instance.kill && playerStats.isAlive)
         {
-            playerStats.Damage(playerStats.currentStats.CurrentHealth);
+            Damage(playerStats.currentStats.CurrentHealth);
             Debug.Log("Player Killed Self!");
             playerMovementController.enabled = false;
             playerCombatController.enabled = false;
             animationStateController.enabled = false;
         }  
-    }
 
-    public void SetFocus(GameObject newFocus)
-    {
-        focus = newFocus;
-        focus.GetComponent<Outline>().enabled = true;
-    }
 
-    private void RemoveFocus()
-    {
-        focus.GetComponent<Outline>().enabled = false;
-        focus = null;
-    }
-
-    /// <summary>
-    /// If focus is not null and player interacts
-    /// Detect interactable tag to display logic
-    /// </summary>
-    private void Interact()
-    {
-        
     } 
 
+    #region - Stats -
 
+    private Coroutine dischargeMaxHealth;
+    private bool dischargeMaxHealthIsActive = false;
+    private void CheckPlayerDeath(){
+        if(!playerStats.isAlive){ return; }
+        if(playerStats.currentStats.CurrentHealth <= 0){
+            playerStats.isAlive = false;
+            GameEvents.Instance.PlayerDiedTriggerEnter();
+        }
+    }    
+
+    public void ModifyMaxHealth(int maxHealthChange){
+        playerStats.currentStats.MaxHealth += maxHealthChange;
+        GameEvents.Instance.PlayerMaxHealthChangeEnter();
+    }
+
+    public void Heal(int healing){
+        playerStats.currentStats.CurrentHealth += healing;
+        GameEvents.Instance.PlayerHealingTriggerEnter();
+    }
+
+    public void Damage(int damage){
+        playerStats.currentStats.CurrentHealth -= damage;
+        CheckPlayerDeath();
+        GameEvents.Instance.PlayerDamageTriggerEnter();
+    }
+
+    //If player health over max health
+    public void OverHeal(){
+        if(!(playerStats.currentStats.CurrentHealth > playerStats.currentStats.MaxHealth)){ return; }
+        
+        int healthDischargeRate = 2;
+        float healthDischargeTime = 0.75f;
+
+        dischargeMaxHealth = StartCoroutine(DecrementHealth(healthDischargeRate, healthDischargeTime));
+    }
+
+    IEnumerator DecrementHealth(int healthDischargeRate, float timeToDecrement){
+        dischargeMaxHealthIsActive = true;
+        yield return new WaitForSeconds(timeToDecrement);
+        playerStats.currentStats.CurrentHealth -= healthDischargeRate;
+        dischargeMaxHealthIsActive = false;
+    }
+
+    #endregion
 
 }

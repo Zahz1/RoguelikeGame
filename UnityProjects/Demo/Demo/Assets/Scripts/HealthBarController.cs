@@ -33,10 +33,8 @@ public class HealthBarController : MonoBehaviour
         //Are triggered by other scripts
 
         //For when max health increases or decreases
-        GameEvents.Instance.OnPlayerMaxHealthIncreaseEnter += SetMaxHealth;
-        GameEvents.Instance.OnPlayerMaxHealthDecreaseEnter += SetMaxHealth;
-        GameEvents.Instance.OnPlayerMaxHealthIncreaseEnter += UpdateHealthBar;
-        GameEvents.Instance.OnPlayerMaxHealthIncreaseEnter += UpdateHealthBar;
+        GameEvents.Instance.OnPlayerMaxHealthChangeEnter += SetMaxHealth;
+        GameEvents.Instance.OnPlayerMaxHealthChangeEnter += UpdateHealthBar;
         //For when current health increases or decreases
         GameEvents.Instance.OnPlayerHealingTriggerEnter += AddHealth;
         GameEvents.Instance.OnPlayerDamageTriggerEnter += RemoveHealth;

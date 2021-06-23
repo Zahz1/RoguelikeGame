@@ -28,53 +28,6 @@ public class CharacterInfo : MonoBehaviour
         isAlive = true;
         
         InitializeStats();
-        
-    }
-
-    private void Update()
-    {
-        if (CheckPlayerDeath() && isAlive)
-        {
-            isAlive = false;
-            GameEvents.Instance.PlayerDiedTriggerEnter();
-        }
-        if (InputListener.Instance.damageSelf)
-        {
-            Damage(25);
-        }
-    }
-
-    private bool CheckPlayerDeath()
-    {
-        if(currentStats.CurrentHealth <= 0)
-        {
-            return true;
-        }
-        return false;
-    }
-
-    public void IncreaseMaxHealth(int healthIncrease)
-    {
-        currentStats.MaxHealth += healthIncrease;
-        GameEvents.Instance.PlayerMaxHealthIncreaseEnter();
-    }
-
-    public void DecreaseMaxHealth(int healthDecrease)
-    {
-        currentStats.MaxHealth -= healthDecrease;
-        GameEvents.Instance.PlayerMaxHealthDecreaseEnter();
-    }
-
-    public void Heal(int healing) //Heal
-    {
-        currentStats.CurrentHealth += healing;
-        GameEvents.Instance.PlayerHealingTriggerEnter();
-    }
-
-    public void Damage(int damage)
-    {
-        currentStats.CurrentHealth -= damage;
-        GameEvents.Instance.PlayerDamageTriggerEnter();
     }
 
     private void InitializeBaseStats(){

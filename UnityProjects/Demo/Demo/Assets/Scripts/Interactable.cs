@@ -9,7 +9,7 @@ public class Interactable : MonoBehaviour
 {
     //Required Componentss
     public Outline outline;
-    private SphereCollider interactionBoundary;
+    public SphereCollider interactionBoundary;
     private Rigidbody rb;
 
     //Distance player needs to be to an interactable

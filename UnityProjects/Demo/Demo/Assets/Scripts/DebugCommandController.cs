@@ -29,7 +29,11 @@ public class DebugCommandController : MonoBehaviour
         //player.GetComponent<CharacterInfo>().characterWallet += amount;
     }
 
-    public void AddHealth(int amount){
+    public void RestoreHealth(){
         //player.GetComponent<CharacterInfo>().Heal(amount);
+    }
+
+    public void AddHealth(int x){
+
     }
 }
