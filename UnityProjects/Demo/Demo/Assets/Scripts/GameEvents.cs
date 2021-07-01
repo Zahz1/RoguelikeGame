@@ -164,4 +164,16 @@ public class GameEvents : MonoBehaviour
     }
 
     #endregion
+
+    #region - Stage Completion -
+
+    public event Action OnStageCompleteEnter;
+
+    public void StageCompleteEnter(){
+        if(OnStageCompleteEnter != null){
+            OnStageCompleteEnter();
+        }
+    }
+
+    #endregion
 }

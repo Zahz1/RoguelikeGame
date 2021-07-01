@@ -117,6 +117,7 @@ public class PlayerController : MonoBehaviour
     IEnumerator DecrementHealth(int healthDischargeRate, float timeToDecrement){
         dischargeMaxHealthIsActive = true;
         yield return new WaitForSeconds(timeToDecrement);
+        yield return new WaitForEndOfFrame();
         playerStats.currentStats.CurrentHealth -= healthDischargeRate;
         dischargeMaxHealthIsActive = false;
     }

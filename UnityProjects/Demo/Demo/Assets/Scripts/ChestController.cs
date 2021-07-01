@@ -206,7 +206,7 @@ public class ChestController : Interactable
 
     private void SetCost()
     {
-        int gameStage = GameManager.Instance.GetGameStage();
+        int gameStage = GameManager.Instance.GameStage;
         float costModifier = 1;
         //If on level 1, cost modifier is 1, otherwise it is (1 + (level/3))^2
         if(gameStage > 1){

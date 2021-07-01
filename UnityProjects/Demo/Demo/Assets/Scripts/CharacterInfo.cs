@@ -20,14 +20,15 @@ public class CharacterInfo : MonoBehaviour
 
     private void Awake()
     {
-        
+        InitializeStats();
+        isAlive = true;
     }
 
     private void Start()
     {
-        isAlive = true;
         
-        InitializeStats();
+        
+        
     }
 
     private void InitializeBaseStats(){

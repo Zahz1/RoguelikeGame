@@ -50,6 +50,8 @@ public class PlayerCombatController : MonoBehaviour
     PrimaryAttack primaryAttack;
     SecondaryAttack secondaryAttack;
     SpecialAttack specialAttack;
+
+    
     private void PrimaryAttack1(){
         
     }
