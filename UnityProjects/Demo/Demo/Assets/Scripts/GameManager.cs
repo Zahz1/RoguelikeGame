@@ -21,6 +21,9 @@ public class GameManager : MonoBehaviour
         {
             instance = this;
         }
+
+        SetGameDifficultyLevelTransitionSpeed();
+        DifficultyModifier = GameDifficulty.Hard;
     }
     #endregion
 
@@ -30,8 +33,6 @@ public class GameManager : MonoBehaviour
     private bool playerDied;
     private bool playerWon;
 
-    private int GameStage;
-    public int DifficultyModifier;
 
     private void Start()
     {
@@ -48,16 +49,23 @@ public class GameManager : MonoBehaviour
 
         //Subscribe method to PlayerDied event
         GameEvents.Instance.OnPlayerDiedTriggerEnter += PlayerDied;
+
+        //Subscribe method to OnStageCompleteEvent
+        GameEvents.Instance.OnStageCompleteEnter += OnStageComplete;
+    }
+
+    private void Update(){
+        IncreaseGameDifficultyLevel();
     }
 
     private void EndGame()
     {
         if (!gameEnded)
         {
-            Debug.Log("Game Over");
-            gameEnded = true;
             if (playerDied)
             {
+                Debug.Log("Game Over");
+                gameEnded = true;
                 animator.SetTrigger("isDead");
             }
         }
@@ -98,5 +106,50 @@ public class GameManager : MonoBehaviour
         PauseController.Instance.GameIsPaused = !PauseController.Instance.GameIsPaused;
     }
 
-    public int GetGameStage(){ return this.GameStage; }
+    
+
+    #region - Game Difficulty -
+
+    public int GameStage { get; private set; } //Increases after each completed level
+    public int GameDifficultyLevel { get; private set; } //Increases over time and stage transitions
+    private float GameDifficultyLevelTransitionSpeed; // Time until a GameDifficultyLevel increases, Dependent on DifficultyModifier
+    public GameDifficulty DifficultyModifier { get; private set; } //Is set on game start up   
+
+    private Coroutine TransitionDifficultyLevelRoutine;
+    private bool TransitionDifficultyLevelRoutineIsActive;
+
+    private void OnStageComplete(){
+        this.GameStage++;
+    }
+
+    private void SetGameDifficultyLevelTransitionSpeed(){
+        switch(DifficultyModifier){
+            case GameDifficulty.Normal:
+                GameDifficultyLevelTransitionSpeed = 240f; //Seconds
+                break;
+            case GameDifficulty.Hard:
+                GameDifficultyLevelTransitionSpeed = 180f;
+                break;
+            case GameDifficulty.Nightmare:
+                GameDifficultyLevelTransitionSpeed = 120f;
+                break;
+            case GameDifficulty.Regret:
+                GameDifficultyLevelTransitionSpeed = 90f;
+                break;
+        }
+    }
+
+    private void IncreaseGameDifficultyLevel(){
+        if(TransitionDifficultyLevelRoutineIsActive){ return; }
+        TransitionDifficultyLevelRoutine = StartCoroutine(TransitionDifficultyLevel());
+    }
+
+    IEnumerator TransitionDifficultyLevel(){
+        TransitionDifficultyLevelRoutineIsActive = true;
+        yield return new WaitForSeconds(GameDifficultyLevelTransitionSpeed);
+        GameDifficultyLevel++;
+        TransitionDifficultyLevelRoutineIsActive = false;
+    }
+
+    #endregion
 }

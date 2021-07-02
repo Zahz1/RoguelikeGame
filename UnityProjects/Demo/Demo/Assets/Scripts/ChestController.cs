@@ -8,19 +8,16 @@ public class ChestController : Interactable
     private ChestType type;
     private ItemRarity dropRarity;
     private DropChance dropChanceValues;
+    [SerializeField]
     private int cost;
     public List<Item> lootPool = new List<Item>();
     private CharacterInfo playerStats;
-    private DropChance dropChanceValues;
-    private int cost;
-    public List<Item> lootPool = new List<Item>();
 
     public override void Start()
     {
         base.Start();
         base.uses = 1;
         base.interactType = InteractableType.Chest;
-
         this.dropRarity = ItemRarity.None;
 
         //Check what chest rarity/type to calculate drop 
@@ -75,7 +72,7 @@ public class ChestController : Interactable
         //int dropIndex = GenerateValue(0, n(n = number of elements -1));
         //Item loot = lootPool.get(dropIndex);
     }
-    
+
     public override bool OnTriggerEnter(Collider other)
     {
         if(base.OnTriggerEnter(other)){
@@ -94,7 +91,7 @@ public class ChestController : Interactable
     public override bool IsInteractable()
     {
         if(base.IsInteractable()){
-            if(playerStats.GetCharacterWallet() >= this.cost){
+            if(playerStats.currentStats.Wallet >= this.cost){
                 base.outline.enabled = true;
                 base.isInteractable = true;
                 GameEvents.Instance.InteractionUITriggerEnter();
@@ -205,12 +202,11 @@ public class ChestController : Interactable
             }
         }
         Debug.LogWarning("No DropRarity selected!");
-        return true;
     }
 
     private void SetCost()
     {
-        int gameStage = GameManager.Instance.GetGameStage();
+        int gameStage = GameManager.Instance.GameStage;
         float costModifier = 1;
         //If on level 1, cost modifier is 1, otherwise it is (1 + (level/3))^2
         if(gameStage > 1){
@@ -226,11 +222,6 @@ public class ChestController : Interactable
         public int MythicChance { get; }
         public int LegendaryChance { get; }
         public int ChampionChance { get; }
-        private int CommonChance { get; }
-        private int HeroicChance { get; }
-        private int MythicChance { get; }
-        private int LegendaryChance { get; }
-        private int ChampionChance { get; }
         
         public DropChance(int commonChance, int heroicChance, int mythicChacne, 
                                 int legendaryChance, int championChance){

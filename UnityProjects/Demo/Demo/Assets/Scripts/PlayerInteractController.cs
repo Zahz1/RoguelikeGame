@@ -13,7 +13,7 @@ public class PlayerInteractController : MonoBehaviour
 
     private void Update()
     {
-        if(InputListener.Instance.GetInteract())
+        if(InputListener.Instance.interact)
         {
             if(focus != null)
             {

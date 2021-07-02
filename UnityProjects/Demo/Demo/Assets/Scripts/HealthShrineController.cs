@@ -10,6 +10,7 @@ public class HealthShrineController : Interactable
     private float cooldownTime = 5f; 
 
     private CharacterInfo playerStats;
+    private PlayerController playerController;
 
     private Coroutine cooldownRoutine = null;
     private bool cooldownRoutineActive = false;
@@ -33,7 +34,7 @@ public class HealthShrineController : Interactable
     {
         if (base.isInteractable && playerStats != null)
         {
-            playerStats.Heal((int)(playerStats.GetCurrentMaxHealth() * healthRegen));
+            playerController.Heal((int)(playerStats.currentStats.MaxHealth * healthRegen));
             base.Interact();
             if (base.uses > 0) {
                 cooldownRoutine = StartCoroutine(Cooldown());
@@ -45,6 +46,7 @@ public class HealthShrineController : Interactable
     {
         if (base.OnTriggerEnter(other))
         {
+            playerController = base.player.GetComponent<PlayerController>();
             playerStats = base.player.GetComponent<CharacterInfo>();
             IsInteractable();
         }
@@ -55,13 +57,14 @@ public class HealthShrineController : Interactable
     {
         base.OnTriggerExit();
         playerStats = null;
+        playerController = null;
     }
 
     public override bool IsInteractable()
     {
         if (base.IsInteractable()) 
         {
-            if(playerStats.GetCurrentHealth() < playerStats.GetCurrentMaxHealth())
+            if(playerStats.currentStats.CurrentHealth < playerStats.currentStats.MaxHealth)
             {
                 base.outline.enabled = true;
                 base.isInteractable = true;

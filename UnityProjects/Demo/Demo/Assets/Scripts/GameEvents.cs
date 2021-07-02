@@ -82,26 +82,25 @@ public class GameEvents : MonoBehaviour
             OnPlayerDiedTriggerEnter();
         }
     }
+    
+    //Debug Console
+    public event Action OnDisplayDebugConsoleEnter;
+    public void DisplayDebugConsoleEnter(){
+        if(OnDisplayDebugConsoleEnter != null){
+            OnDisplayDebugConsoleEnter();
+        }
+    }
+
     #endregion
 
     #region Health Triggers
     //Trigger if player max health increases
-    public event Action OnPlayerMaxHealthIncreaseEnter;
-    public void PlayerMaxHealthIncreaseEnter()
+    public event Action OnPlayerMaxHealthChangeEnter;
+    public void PlayerMaxHealthChangeEnter()
     {
-        if(OnPlayerMaxHealthIncreaseEnter != null)
+        if(OnPlayerMaxHealthChangeEnter != null)
         {
-            OnPlayerMaxHealthIncreaseEnter();
-        }
-    }
-
-    //Trigger if player max health decreases
-    public event Action OnPlayerMaxHealthDecreaseEnter;
-    public void PlayerMaxHealthDecreaseEnter()
-    {
-        if (OnPlayerMaxHealthDecreaseEnter != null)
-        {
-            OnPlayerMaxHealthDecreaseEnter();
+            OnPlayerMaxHealthChangeEnter();
         }
     }
 
@@ -136,7 +135,45 @@ public class GameEvents : MonoBehaviour
             OnPlayerInteractTriggerEnter(playerID, interactableID);
         }
     }
-    
     #endregion
 
+    #region - Attack Events -
+
+    public event Action OnPlayerAttackMaxUseChangeEnter;
+
+    public void PlayerAttackMaxUseChangeEnter(){
+        if(OnPlayerAttackMaxUseChangeEnter != null){
+            OnPlayerAttackMaxUseChangeEnter();
+        }
+    }
+
+    public event Action OnPlayerAttackCooldownTimeChangeEnter;
+
+    public void PlayerAttackCooldownTimeChangeEnter(){
+        if(OnPlayerAttackCooldownTimeChangeEnter != null){
+            OnPlayerAttackCooldownTimeChangeEnter();
+        }
+    }
+
+    public event Action OnPlayerAttackCooldownCancelEnter;
+
+    public void PlayerAttackCooldownCancelEnter(){
+        if(OnPlayerAttackCooldownCancelEnter != null){
+            OnPlayerAttackCooldownCancelEnter();
+        }
+    }
+
+    #endregion
+
+    #region - Stage Completion -
+
+    public event Action OnStageCompleteEnter;
+
+    public void StageCompleteEnter(){
+        if(OnStageCompleteEnter != null){
+            OnStageCompleteEnter();
+        }
+    }
+
+    #endregion
 }

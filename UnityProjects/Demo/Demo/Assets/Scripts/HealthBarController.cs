@@ -16,14 +16,14 @@ public class HealthBarController : MonoBehaviour
     private Slider slider;
     public TextMeshProUGUI text;
     private PlayerController playerController;
-    private CharacterInfo characterInfo;
+    private CharacterInfo playerStats;
 
     private void Start()
     {
         slider = GetComponent<Slider>();
         
         playerController = GameObject.Find("Player").GetComponent<PlayerController>();
-        characterInfo = playerController.GetComponent<CharacterInfo>();
+        playerStats = playerController.GetComponent<CharacterInfo>();
         
 
         Invoke("UpdateHealthBar", 0f);
@@ -33,10 +33,8 @@ public class HealthBarController : MonoBehaviour
         //Are triggered by other scripts
 
         //For when max health increases or decreases
-        GameEvents.Instance.OnPlayerMaxHealthIncreaseEnter += SetMaxHealth;
-        GameEvents.Instance.OnPlayerMaxHealthDecreaseEnter += SetMaxHealth;
-        GameEvents.Instance.OnPlayerMaxHealthIncreaseEnter += UpdateHealthBar;
-        GameEvents.Instance.OnPlayerMaxHealthIncreaseEnter += UpdateHealthBar;
+        GameEvents.Instance.OnPlayerMaxHealthChangeEnter += SetMaxHealth;
+        GameEvents.Instance.OnPlayerMaxHealthChangeEnter += UpdateHealthBar;
         //For when current health increases or decreases
         GameEvents.Instance.OnPlayerHealingTriggerEnter += AddHealth;
         GameEvents.Instance.OnPlayerDamageTriggerEnter += RemoveHealth;
@@ -47,7 +45,7 @@ public class HealthBarController : MonoBehaviour
 
     private void AddHealth()
     {
-        newHealth = characterInfo.GetCurrentHealth();
+        newHealth = playerStats.currentStats.CurrentHealth;
         healthChange = newHealth - (int)slider.value;
         slider.value += healthChange;
         UpdateHealthBar();
@@ -55,7 +53,7 @@ public class HealthBarController : MonoBehaviour
 
     private void RemoveHealth()
     {
-        newHealth = characterInfo.GetCurrentHealth();
+        newHealth = playerStats.currentStats.CurrentHealth;
         healthChange = (int)slider.value - newHealth;
         slider.value -= healthChange;
         UpdateHealthBar();
@@ -63,16 +61,16 @@ public class HealthBarController : MonoBehaviour
 
     private void SetMaxHealth()
     {
-        slider.maxValue = characterInfo.GetCurrentMaxHealth();
+        slider.maxValue = playerStats.currentStats.MaxHealth;
         UpdateHealthBar();
     }
 
     private void UpdateHealthBar()
     {
-        slider.maxValue = characterInfo.GetCurrentMaxHealth();
-        slider.value = characterInfo.GetCurrentHealth();
-        currentHealth = characterInfo.GetCurrentHealth().ToString();
-        maxHealth = characterInfo.GetCurrentMaxHealth().ToString();
+        slider.maxValue = playerStats.currentStats.MaxHealth;
+        slider.value = playerStats.currentStats.CurrentHealth;
+        currentHealth = playerStats.currentStats.CurrentHealth.ToString();
+        maxHealth = playerStats.currentStats.MaxHealth.ToString();
         healthBarString = currentHealth + "/" + maxHealth;
         text.text = healthBarString;
     }
